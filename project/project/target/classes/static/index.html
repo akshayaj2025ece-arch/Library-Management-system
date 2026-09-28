@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Library Management System</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background-color: #f4f6f8;
+            color: #222;
+        }
+
+        header {
+            background-color: #263238;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 25px auto;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(200px, 1fr)
+            );
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #37474f;
+        }
+
+        .section {
+            background-color: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            margin-top: 0;
+            color: #263238;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 7px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 18px;
+            margin-top: 8px;
+            border: none;
+            border-radius: 5px;
+            background-color: #37474f;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #263238;
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #f1f3f4;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>Smart Library Resource Management System</h1>
+
+    <p>
+        Book Management • Borrow & Return • Fine Calculator
+        • Vendors • Purchase • Payments
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+    <!-- DASHBOARD -->
+
+    <div class="dashboard">
+
+        <div class="card">
+            <h3>Total Books</h3>
+            <h2 id="totalBooks">0</h2>
+        </div>
+
+        <div class="card">
+            <h3>Total Copies</h3>
+            <h2 id="totalCopies">0</h2>
+        </div>
+
+        <div class="card">
+            <h3>Available Copies</h3>
+            <h2 id="availableCopies">0</h2>
+        </div>
+
+        <div class="card">
+            <h3>Issued Copies</h3>
+            <h2 id="issuedCopies">0</h2>
+        </div>
+
+        <div class="card">
+            <h3>Members</h3>
+            <h2 id="totalStudents">0</h2>
+        </div>
+
+        <div class="card">
+            <h3>Pending Fine</h3>
+            <h2 id="pendingFine">₹0</h2>
+        </div>
+
+    </div>
+
+
+    <!-- BOOK MANAGEMENT -->
+
+    <div class="section">
+
+        <h2>📚 Book Management</h2>
+
+        <div class="grid">
+
+            <div>
+
+                <h3>Add Book</h3>
+
+                <input
+                        id="bookTitle"
+                        placeholder="Book Title">
+
+                <input
+                        id="bookAuthor"
+                        placeholder="Author">
+
+                <input
+                        id="bookCopies"
+                        type="number"
+                        placeholder="Total Copies">
+
+                <button onclick="createBook()">
+                    Add Book
+                </button>
+
+            </div>
+
+
+            <div>
+
+                <h3>Book List</h3>
+
+                <button onclick="getBooks()">
+                    View Books
+                </button>
+
+                <div
+                        id="bookResult"
+                        class="result">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- STUDENT MANAGEMENT -->
+
+    <div class="section">
+
+        <h2>👨‍🎓 Member Management</h2>
+
+        <div class="grid">
+
+            <div>
+
+                <h3>Add Member</h3>
+
+                <input
+                        id="studentName"
+                        placeholder="Name">
+
+                <input
+                        id="department"
+                        placeholder="Department">
+
+                <select id="memberType">
+
+                    <option value="Student">
+                        Student
+                    </option>
+
+                    <option value="Faculty">
+                        Faculty
+                    </option>
+
+                </select>
+
+                <button onclick="createStudent()">
+                    Add Member
+                </button>
+
+            </div>
+
+
+            <div>
+
+                <h3>Member List</h3>
+
+                <button onclick="getStudents()">
+                    View Members
+                </button>
+
+                <div
+                        id="studentResult"
+                        class="result">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- BORROW -->
+
+    <div class="section">
+
+        <h2>📖 Borrow Book</h2>
+
+        <input
+                id="borrowBookId"
+                type="number"
+                placeholder="Book ID">
+
+        <input
+                id="borrowStudentId"
+                type="number"
+                placeholder="Student ID">
+
+        <button onclick="borrowBook()">
+            Borrow Book
+        </button>
+
+        <div
+                id="borrowResult"
+                class="result">
+        </div>
+
+    </div>
+
+
+    <!-- RETURN -->
+
+    <div class="section">
+
+        <h2>↩️ Return Book & Fine</h2>
+
+        <input
+                id="returnTransactionId"
+                type="number"
+                placeholder="Transaction ID">
+
+        <button onclick="returnBook()">
+            Return Book
+        </button>
+
+        <div
+                id="returnResult"
+                class="result">
+        </div>
+
+    </div>
+
+
+    <!-- TRANSACTIONS -->
+
+    <div class="section">
+
+        <h2>📋 Transactions</h2>
+
+        <button onclick="getTransactions()">
+            View Transactions
+        </button>
+
+        <div
+                id="transactionResult"
+                class="result">
+        </div>
+
+    </div>
+
+
+    <!-- VENDOR -->
+
+    <div class="section">
+
+        <h2>🏢 Vendor Management</h2>
+
+        <input
+                id="vendorName"
+                placeholder="Vendor Name">
+
+        <input
+                id="vendorContact"
+                placeholder="Contact">
+
+        <input
+                id="vendorAddress"
+                placeholder="Address">
+
+        <button onclick="createVendor()">
+            Add Vendor
+        </button>
+
+        <button onclick="getVendors()">
+            View Vendors
+        </button>
+
+        <div
+                id="vendorResult"
+                class="result">
+        </div>
+
+    </div>
+
+
+    <!-- PURCHASE -->
+
+    <div class="section">
+
+        <h2>🛒 Purchase Order</h2>
+
+        <input
+                id="purchaseVendorId"
+                type="number"
+                placeholder="Vendor ID">
+
+        <input
+                id="purchaseBookId"
+                type="number"
+                placeholder="Book ID">
+
+        <input
+                id="purchaseQuantity"
+                type="number"
+                placeholder="Quantity">
+
+        <input
+                id="unitPrice"
+                type="number"
+                placeholder="Unit Price">
+
+        <button onclick="createPurchase()">
+            Create Purchase
+        </button>
+
+        <button onclick="getPurchases()">
+            View Purchases
+        </button>
+
+        <div
+                id="purchaseResult"
+                class="result">
+        </div>
+
+    </div>
+
+
+    <!-- PAYMENT -->
+
+    <div class="section">
+
+        <h2>💰 Fine Payment</h2>
+
+        <input
+                id="paymentTransactionId"
+                type="number"
+                placeholder="Transaction ID">
+
+        <input
+                id="paymentAmount"
+                type="number"
+                placeholder="Amount">
+
+        <select id="paymentMethod">
+
+            <option value="CASH">
+                CASH
+            </option>
+
+            <option value="BANK">
+                BANK
+            </option>
+
+        </select>
+
+        <button onclick="createPayment()">
+            Pay Fine
+        </button>
+
+        <button onclick="getPayments()">
+            View Payments
+        </button>
+
+        <div
+                id="paymentResult"
+                class="result">
+        </div>
+
+    </div>
+
+
+    <!-- REPORT -->
+
+    <div class="section">
+
+        <h2>📊 Reports</h2>
+
+        <button onclick="getReport()">
+            Generate Report
+        </button>
+
+        <div
+                id="reportResult"
+                class="result">
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    const baseURL = "";
+
+
+    // BOOK
+
+    async function createBook() {
+
+        const book = {
+
+            title:
+            document.getElementById("bookTitle").value,
+
+            author:
+            document.getElementById("bookAuthor").value,
+
+            totalCopies:
+                parseInt(
+                    document.getElementById("bookCopies").value
+                ),
+
+            availableCopies:
+                parseInt(
+                    document.getElementById("bookCopies").value
+                )
+        };
+
+        const response = await fetch(
+            "/books/createBook",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(book)
+            }
+        );
+
+        const data = await response.json();
+
+        document.getElementById("bookResult")
+            .innerText =
+            JSON.stringify(data, null, 2);
+
+        getReport();
+    }
+
+
+    async function getBooks() {
+
+        const response =
+            await fetch("/books/getBooks");
+
+        const data =
+            await response.json();
+
+        document.getElementById("bookResult")
+            .innerText =
+            JSON.stringify(data, null, 2);
+    }
+
+
+    // STUDENT
+
+    async function createStudent() {
+
+        const student = {
+
+            name:
+            document.getElementById("studentName").value,
+
+            department:
+            document.getElementById("department").value,
+
+            memberType:
+            document.getElementById("memberType").value
+        };
+
+        const response = await fetch(
+            "/student/createStudent",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(student)
+            }
+        );
+
+        const data = await response.json();
+
+        document.getElementById("studentResult")
+            .innerText =
+            JSON.stringify(data, null, 2);
+
+        getReport();
+    }
+
+
+    async function getStudents() {
+
+        const response =
+            await fetch("/student/getStudents");
+
+        const data =
+            await response.json();
+
+        document.getElementById("studentResult")
+            .innerText =
+            JSON.stringify(data, null, 2);
+    }
+
+
+    // BORROW
+
+    async function borrowBook() {
+
+        const transaction = {
+
+            bookId:
+                parseInt(
+                    document.getElementById(
+                        "borrowBookId"
+                    ).value
+                ),
+
+            studentId:
+                parseInt(
+                    document.getElementById(
+                        "borrowStudentId"
+                    ).value
+                )
+        };
+
+        const response = await fetch(
+            "/api/borrow/",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(transaction)
+            }
+        );
+
+        const data = await response.json();
+
+        document.getElementById("borrowResult")
+            .innerText =
+            JSON.stringify(data, null, 2);
+
+        getReport();
+    }
+
+
+    // RETURN
+
+    async function returnBook() {
+
+        const id =
+            document.getElementById(
+                "returnTransactionId"
+            ).value;
+
+        const response = await fetch(
+            "/api/borrow/" + id + "/return",
+            {
+                method: "PUT"
+            }
+        );
+
+        const data = await response.json();
+
+        document.getElementById("returnResult")
+            .innerText =
+            JSON.stringify(data, null, 2);
+
+        getReport();
+    }
+
+
+    // TRANSACTIONS
+
+    async function getTransactions() {
+
+        const response =
+            await fetch("/api/borrow/");
+
+        const data =
+            await response.json();
+
+        document.getElementById(
+            "transactionResult"
+        ).innerText =
+            JSON.stringify(data, null, 2);
+    }
+
+
+    // VENDOR
+
+    async function createVendor() {
+
+        const vendor = {
+
+            vendorName:
+            document.getElementById(
+                "vendorName"
+            ).value,
+
+            contact:
+            document.getElementById(
+                "vendorContact"
+            ).value,
+
+            address:
+            document.getElementById(
+                "vendorAddress"
+            ).value
+        };
+
+        const response = await fetch(
+            "/api/vendors/create",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(vendor)
+            }
+        );
+
+        const data = await response.json();
+
+        document.getElementById("vendorResult")
+            .innerText =
+            JSON.stringify(data, null, 2);
+    }
+
+
+    async function getVendors() {
+
+        const response =
+            await fetch("/api/vendors/");
+
+        const data =
+            await response.json();
+
+        document.getElementById("vendorResult")
+            .innerText =
+            JSON.stringify(data, null, 2);
+    }
+
+
+    // PURCHASE
+
+    async function createPurchase() {
+
+        const purchase = {
+
+            vendorId:
+                parseInt(
+                    document.getElementById(
+                        "purchaseVendorId"
+                    ).value
+                ),
+
+            bookId:
+                parseInt(
+                    document.getElementById(
+                        "purchaseBookId"
+                    ).value
+                ),
+
+            quantity:
+                parseInt(
+                    document.getElementById(
+                        "purchaseQuantity"
+                    ).value
+                ),
+
+            unitPrice:
+                parseFloat(
+                    document.getElementById(
+                        "unitPrice"
+                    ).value
+                )
+        };
+
+        const response = await fetch(
+            "/api/purchases/create",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(purchase)
+            }
+        );
+
+        const data = await response.json();
+
+        document.getElementById("purchaseResult")
+            .innerText =
+            JSON.stringify(data, null, 2);
+
+        getReport();
+    }
+
+
+    async function getPurchases() {
+
+        const response =
+            await fetch("/api/purchases/");
+
+        const data =
+            await response.json();
+
+        document.getElementById(
+            "purchaseResult"
+        ).innerText =
+            JSON.stringify(data, null, 2);
+    }
+
+
+    // PAYMENT
+
+    async function createPayment() {
+
+        const payment = {
+
+            transactionId:
+                parseInt(
+                    document.getElementById(
+                        "paymentTransactionId"
+                    ).value
+                ),
+
+            amount:
+                parseFloat(
+                    document.getElementById(
+                        "paymentAmount"
+                    ).value
+                ),
+
+            paymentMethod:
+            document.getElementById(
+                "paymentMethod"
+            ).value
+        };
+
+        const response = await fetch(
+            "/api/payments/create",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(payment)
+            }
+        );
+
+        const data = await response.json();
+
+        document.getElementById(
+            "paymentResult"
+        ).innerText =
+            JSON.stringify(data, null, 2);
+
+        getReport();
+    }
+
+
+    async function getPayments() {
+
+        const response =
+            await fetch("/api/payments/");
+
+        const data =
+            await response.json();
+
+        document.getElementById(
+            "paymentResult"
+        ).innerText =
+            JSON.stringify(data, null, 2);
+    }
+
+
+    // REPORT
+
+    async function getReport() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/reports/dashboard"
+                );
+
+            const data =
+                await response.json();
+
+
+            document.getElementById(
+                "totalBooks"
+            ).innerText =
+                data.totalBooks ?? 0;
+
+
+            document.getElementById(
+                "totalCopies"
+            ).innerText =
+                data.totalCopies ?? 0;
+
+
+            document.getElementById(
+                "availableCopies"
+            ).innerText =
+                data.availableCopies ?? 0;
+
+
+            document.getElementById(
+                "issuedCopies"
+            ).innerText =
+                data.issuedCopies ?? 0;
+
+
+            document.getElementById(
+                "totalStudents"
+            ).innerText =
+                data.totalStudents ?? 0;
+
+
+            document.getElementById(
+                "pendingFine"
+            ).innerText =
+                "₹" +
+                (data.pendingFine ?? 0);
+
+
+            document.getElementById(
+                "reportResult"
+            ).innerText =
+                JSON.stringify(data, null, 2);
+
+        }
+
+        catch (error) {
+
+            console.log(error);
+
+        }
+    }
+
+
+    // LOAD REPORT WHEN PAGE OPENS
+
+    window.onload = function () {
+        getReport();
+    };
+
+</script>
+
+</body>
+
+</html>
